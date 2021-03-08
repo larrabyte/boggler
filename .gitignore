@@ -1,3 +1,6 @@
+# Things I don't want to be tracked.
+.vscode/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

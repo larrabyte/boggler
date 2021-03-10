@@ -1,2 +1,4 @@
+import engine
+
 if __name__ == "__main__":
-    print("Hello, World!")
+    engine.slowtype(message="Hello, World!\n", speed=60)

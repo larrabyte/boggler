@@ -1,4 +1,5 @@
-import engine
+import terminal as term
+import engine as en
 
 if __name__ == "__main__":
-    engine.slowtype(message="Hello, World!\n", speed=60)
+    engine = en.Engine()

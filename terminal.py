@@ -13,7 +13,7 @@ def getchar(query: str) -> str:
 
     if os.name != "nt":
         # Run UNIX-specific code if we're not on Windows.
-        import termios, tty, sys
+        import termios, tty
         fd = sys.stdin.fileno()
         settings = termios.tcgetattr(fd)
 

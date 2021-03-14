@@ -19,6 +19,12 @@ class Direction(Enum):
 
         return Direction.EAST
 
+class Character:
+    def __init__(self, name: str, health: int) -> None:
+        self.name = name
+        self.health = health
+        self.inventory = []
+
 class Room:
     def __init__(self, name: str) -> None:
         self.name = name
@@ -59,13 +65,26 @@ class Room:
             entry.links[direction.opposite] = None
             self.links[direction] = None
 
-class Character:
-    def __init__(self, name: str, health: int) -> None:
-        self.name = name
-        self.health = health
-        self.inventory = []
-
 class Engine:
     def __init__(self) -> None:
         self.player = Character(name="Player", health=100)
         self.cursor = None
+
+    def mapsetup(self) -> None:
+        """Setup the map as defined in this function."""
+        cpu = Room("Central Processing Unit")
+        ram = Room("Random Access Memory")
+        sb = Room("South Bridge")
+        mb = Room("Motherboard")
+
+        cpu.link(Direction.SOUTH, sb)
+        cpu.link(Direction.EAST, ram)
+        sb.link(Direction.SOUTH, mb)
+
+        self.cursor = cpu
+
+    def interpret(self, argv: list) -> str:
+        if argv[0] == "help":
+            return "There is no one to help you here."
+
+        return "Unknown command!"

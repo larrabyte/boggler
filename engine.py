@@ -27,15 +27,26 @@ class Room:
         self.links = {
             Direction.NORTH: None,
             Direction.EAST: None,
-            Direction.WEST: None,
-            Direction.SOUTH: None
+            Direction.SOUTH: None,
+            Direction.WEST: None
         }
 
-    def adjacent(self) -> t.Generator[Room]:
-        """Return a generator for iterating over each adjacent room."""
-        for key, value in self.links.items():
-            if value is None: continue
-            yield (key, value)
+    def adjacent(self) -> str:
+        """Returns a small map to print containing adjacent rooms."""
+        north = getattr(self.links[Direction.NORTH], "name", None) or "END"
+        east = getattr(self.links[Direction.EAST], "name", None) or "END"
+        south = getattr(self.links[Direction.SOUTH], "name", None) or "END"
+        west = getattr(self.links[Direction.WEST], "name", None) or "END"
+
+        horizontal = f"  {west} -- W -- ● -- E -- {east}"
+        spacing = horizontal.index("●") * 2 + 1
+
+        formatted = f"\n{north.center(spacing)}\n"
+        formatted += f"{'|'.center(spacing)}\n{'N'.center(spacing)}\n{'|'.center(spacing)}\n"
+        formatted += f"{horizontal}\n"
+        formatted += f"{'|'.center(spacing)}\n{'S'.center(spacing)}\n{'|'.center(spacing)}"
+        formatted += f"\n{south.center(spacing)}\n"
+        return formatted
 
     def link(self, direction: Direction, destination: Room) -> None:
         """Link two rooms together, adding entries to both objects."""

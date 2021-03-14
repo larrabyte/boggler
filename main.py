@@ -9,6 +9,7 @@ if __name__ == "__main__":
     engine.mapsetup()
 
     if len(sys.argv) > 1 and sys.argv[1] == "skip":
+        # Don't show the boot screen if the user wants to skip.
         pass
     else:
         term.clear()

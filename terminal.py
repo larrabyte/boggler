@@ -4,7 +4,8 @@ import sys
 import os
 
 def clear() -> None:
-    """Clears the terminal."""
+    # Clears the terminal.
+    # Relies on the system's method of clearing the screen.
     os.system("cls" if os.name == "nt" else "clear")
 
 def getchar(query: str) -> str:
@@ -30,7 +31,8 @@ def getchar(query: str) -> str:
     return ch
 
 def typeout(message: str, speed: float) -> None:
-    """Print characters like a typewriter."""
+    # Print characters like a typewriter.
+    # Uses direct access to standard out.
     for char in message:
         sys.stdout.write(char)
         sys.stdout.flush()

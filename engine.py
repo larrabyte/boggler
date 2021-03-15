@@ -7,6 +7,20 @@ class Direction(e.Enum):
     SOUTH = 2
     WEST = 3
 
+    @staticmethod
+    def fromstr(string: str) -> t.Optional[object]:
+        # Get a direction object representing the string's direction.
+        if string.lower() == "north":
+            return Direction.NORTH
+        elif string.lower() == "east":
+            return Direction.EAST
+        elif string.lower() == "south":
+            return Direction.SOUTH
+        elif string.lower() == "west":
+            return Direction.WEST
+
+        return None
+
     @property
     def opposite(self) -> object:
         # Return the opposite direction of itself.
@@ -53,7 +67,7 @@ class Room:
         formatted += f"{'|'.center(spacing)}\n{'N'.center(spacing)}\n{'|'.center(spacing)}\n"
         formatted += f"{horizontal}\n"
         formatted += f"{'|'.center(spacing)}\n{'S'.center(spacing)}\n{'|'.center(spacing)}"
-        formatted += f"\n{south.center(spacing)}\n"
+        formatted += f"\n{south.center(spacing)}"
         return formatted
 
     def link(self, direction: Direction, destination: object) -> None:

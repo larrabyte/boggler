@@ -1,15 +1,14 @@
-from __future__ import annotations
-from enum import Enum
 import typing as t
+import enum as e
 
-class Direction(Enum):
+class Direction(e.Enum):
     NORTH = 0
     EAST = 1
     SOUTH = 2
     WEST = 3
 
     @property
-    def opposite(self) -> Direction:
+    def opposite(self) -> object:
         # Return the opposite direction of itself.
         if self == Direction.NORTH:
             return Direction.SOUTH
@@ -57,7 +56,7 @@ class Room:
         formatted += f"\n{south.center(spacing)}\n"
         return formatted
 
-    def link(self, direction: Direction, destination: Room) -> None:
+    def link(self, direction: Direction, destination: object) -> None:
         # Link two rooms together, adding entries to both objects.
         self.links[direction] = destination
         destination.links[direction.opposite] = self
@@ -71,25 +70,14 @@ class Room:
 class Engine:
     def __init__(self) -> None:
         self.player = Character(name="Player", health=100)
+        self.dispatch = {}
         self.cursor = None
 
-    def mapsetup(self) -> None:
-        # Map setup occurs here. All rooms are created,
-        # items and enemies assigned and the initial spawn room set.
-        cpu = Room("Central Processing Unit")
-        ram = Room("Random Access Memory")
-        sb = Room("South Bridge")
-        mb = Room("Motherboard")
-
-        cpu.link(Direction.SOUTH, sb)
-        cpu.link(Direction.EAST, ram)
-        sb.link(Direction.SOUTH, mb)
-
-        self.cursor = cpu
-
-    def interpret(self, argv: list) -> str:
+    def interpret(self, argv: t.List[str]) -> str:
         # Interpret a string passed in from the player.
-        if argv[0] == "help":
-            return "There is no one to help you here."
+        # Uses the dispatch table to run the correct function.
+        if (func := self.dispatch.get(argv[0], None)) is not None:
+            result = func(self, argv[1:])
+            return result
 
-        return "Unknown command!"
+        return f"bosh: command not found: {argv[0]}"

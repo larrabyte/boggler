@@ -51,7 +51,8 @@ if __name__ == "__main__":
     print("something something put some text here to introduce the player to the game.")
     print("tl;dr you're inside a computer.\n")
 
-    while (userinput := input("$ ")) != "":
+    while (userinput := input("$ ")) is not None:
+        if userinput == "": continue
         userinput = userinput.split()
         response = engine.interpret(userinput)
         print(f"{response}\n")

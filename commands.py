@@ -1,8 +1,7 @@
 import terminal as term
 import engine as en
 import typing as t
-
-import sys
+import sys as s
 
 def help(ctx: en.Engine, arguments: t.List[str]) -> str:
     return "No one will help you here."
@@ -11,14 +10,14 @@ def whereami(ctx: en.Engine, arguments: t.List[str]) -> str:
     return ctx.cursor.adjacent()
 
 def clear(ctx: en.Engine, arguments: t.List[str]) -> str:
-    term.clear()
+    ctx.terminal.clear()
 
     return ("---------------------------------------------\n"
             "larrabyte/boggler: a text-adventure RPG game.\n"
             "---------------------------------------------")
 
 def exit(ctx: en.Engine, arguments: t.List[str]) -> str:
-    sys.exit()
+    s.exit()
 
 def go(ctx: en.Engine, arguments: t.List[str]) -> str:
     if len(arguments) >= 1 and (direction := en.Direction.fromstr(arguments[0])) is not None:

@@ -1,40 +1,76 @@
+import importlib
 import random
 import time
 import sys
 import os
 
-def clear() -> None:
-    # Clears the terminal.
-    # Relies on the system's method of clearing the screen.
-    os.system("cls" if os.name == "nt" else "clear")
+class Terminal:
+    def __init__(self) -> None:
+        if os.name != "nt":
+            self.termios = importlib.import_module("termios")
+            self.tty = importlib.import_module("tty")
+            self.getchar = self.getunixchar
+            self.clearer = "clear"
+        else:
+            self.msvcrt = importlib.import_module("msvcrt")
+            self.getchar = self.msvcrt.getwch()
+            self.clearer = "cls"
 
-def getchar(query: str) -> str:
-    """Grabs a single character from standard input."""
-    print(query)
+        self.clear()
 
-    if os.name != "nt":
-        # Run UNIX-specific code if we're not on Windows.
-        import termios, tty
+    def clear(self) -> None:
+        # Clears the terminal using system-specific calls.
+        os.system(self.clearer)
+
+    def print(self, message: str, **kwargs: dict) -> None:
+        # Print a string to the terminal.
+        print(message, **kwargs)
+
+    def typeout(self, message: str, wpm: int) -> None:
+        # Type out characters to the terminal.
+        for char in message:
+            sys.stdout.write(char)
+            sys.stdout.flush()
+            cps = random.random() * 12 / wpm
+            time.sleep(cps)
+
+    def getunixchar(self) -> None:
+        # Run UNIX-specific code to grab a character from standard input.
         fd = sys.stdin.fileno()
-        settings = termios.tcgetattr(fd)
+        settings = self.termios.tcgetattr(fd)
 
         try:
-            tty.setraw(sys.stdin.fileno())
+            self.tty.setraw(fd)
             ch = sys.stdin.read(1)
         finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, settings)
-    else:
-        # Otherwise, use getchar() from the Microsoft C runtime.
-        from msvcrt import getwch
-        ch = getwch()
+            when = self.termios.TCSADRAIN
+            self.termios.tcsetattr(fd, when, settings)
 
-    return ch
+        return ch
 
-def typeout(message: str, speed: float) -> None:
-    # Print characters like a typewriter.
-    # Uses direct access to standard out.
-    for char in message:
-        sys.stdout.write(char)
-        sys.stdout.flush()
-        cps = random.random() * 12 / speed
-        time.sleep(cps)
+    def getline(self) -> str:
+        # Return input from the terminal.
+        self.print("$ ", end="", flush=True)
+        forbidden = "\x7f\x0d\x1b"
+        buffer = ""
+        cursor = 0
+
+        while (char := self.getchar()):
+            # Are we able to print out this character?
+            if char not in forbidden:
+                self.print(char, end="", flush=True)
+                buffer += char
+                cursor += 1
+
+            # If the user backspaces, move the cursor back.
+            elif char == "\x7f" and cursor > 0:
+                self.print("\b \b", end="", flush=True)
+                buffer = buffer[:-1]
+                cursor -= 1
+
+            # Break this loop if the user presses Enter.
+            elif char == "\x0D":
+                break
+
+        self.print("\n", end="", flush=True)
+        return buffer

@@ -1,13 +1,14 @@
 import terminal as term
 import commands as cmd
 import engine as en
+import data as dt
 
 import inspect
-import data
+import string
 import time
 import sys
 
-def completeinit(instance: en.Engine) -> None:
+def completeinit(instance: en.Engine, screen: term.Terminal) -> None:
     # Final engine initialisation. All rooms are created,
     # items and enemies assigned and initial spawn room set.
     cpu = en.Room("Central Processing Unit")
@@ -20,39 +21,45 @@ def completeinit(instance: en.Engine) -> None:
     sb.link(en.Direction.SOUTH, mb)
     instance.cursor = cpu
 
-    # Fill the dispatch table with commands.
+    # Fill the dispatch table with commands and set the terminal instance.
     funky = {k:v for k, v in inspect.getmembers(cmd, inspect.isfunction)}
     instance.dispatch.update(funky)
+    instance.terminal = screen
 
-def bootsplash() -> None:
-    # Print a boot sequence to standard out.
-    term.clear()
-    term.typeout(data.initial, speed=300)
-    term.typeout(data.bootstrap, speed=25000)
+def bootsplash(engine: en.Engine) -> None:
+    # Print a boot sequence to the terminal.
+    engine.terminal.clear()
+    engine.terminal.typeout(dt.initial, wpm=300)
+    engine.terminal.typeout(dt.bootstrap, wpm=25000)
     time.sleep(0.25)
-    term.typeout(data.final1, speed=50000)
+    engine.terminal.typeout(dt.final1, wpm=50000)
     time.sleep(1)
-    term.typeout(data.final2, speed=50000)
+    engine.terminal.typeout(dt.final2, wpm=50000)
     time.sleep(2)
-    term.typeout(data.final3, speed=50000)
+    engine.terminal.typeout(dt.final3, wpm=50000)
     time.sleep(2)
 
 if __name__ == "__main__":
     engine = en.Engine()
-    completeinit(engine)
+    screen = term.Terminal()
+    completeinit(engine, screen)
 
     if len(sys.argv) != 2 or sys.argv[1] != "skip":
-        bootsplash()
+        # Print a fake bootsplash if no skip command was issued.
+        bootsplash(engine)
 
-    term.clear() # Clear the screen and start the terminal.
-    print("---------------------------------------------")
-    print("larrabyte/boggler: a text-adventure RPG game.")
-    print("---------------------------------------------")
-    print("something something put some text here to introduce the player to the game.")
-    print("tl;dr you're inside a computer.\n")
+    screen.clear()
+    screen.print("---------------------------------------------")
+    screen.print("larrabyte/boggler: a text-adventure RPG game.")
+    screen.print("---------------------------------------------")
+    screen.print("something something put some text here to introduce the player to the game.")
+    screen.print("tl;dr you're inside a computer.\n")
 
-    while (userinput := input("$ ")) is not None:
-        if userinput == "": continue
+    while (userinput := screen.getline()) is not None:
+        # Don't try and interpret input that consists of whitespace.
+        if userinput.isspace(): continue
+
+        # Split the input into words and send to the engine.
         userinput = userinput.split()
         response = engine.interpret(userinput)
-        print(f"{response}\n")
+        screen.print(f"{response}\n")

@@ -85,6 +85,7 @@ class Engine:
     def __init__(self) -> None:
         self.player = Character(name="Player", health=100)
         self.dispatch = {}
+        self.terminal = None
         self.cursor = None
 
     def interpret(self, argv: t.List[str]) -> str:

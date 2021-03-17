@@ -13,7 +13,7 @@ class Terminal:
             self.clearer = "clear"
         else:
             self.msvcrt = importlib.import_module("msvcrt")
-            self.getchar = self.msvcrt.getwch()
+            self.getchar = self.msvcrt.getwch
             self.clearer = "cls"
 
         self.clear()

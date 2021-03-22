@@ -1,6 +1,7 @@
 import terminal as term
 import commands as cmd
 import engine as en
+import typing as t
 import data as dt
 
 import inspect
@@ -41,14 +42,8 @@ def bootsplash(engine: en.Engine) -> None:
     engine.terminal.typeout(dt.final3, wpm=50000)
     time.sleep(2)
 
-if __name__ == "__main__":
-    engine = en.Engine()
-    screen = term.Terminal()
-
-    if len(sys.argv) != 2 or sys.argv[1] != "skip":
-        # Print a fake bootsplash if no skip command was issued.
-        bootsplash(engine)
-
+def getnames() -> t.Tuple[str, str]:
+    # Print the initial screen and query for player data.
     screen.clear()
     screen.print(dt.header)
     screen.typeout("What is your name?\n", wpm=200)
@@ -61,7 +56,9 @@ if __name__ == "__main__":
         screen.print("\nInvalid name. Try another!")
         screen.print("What is your name?")
 
-    screen.typeout("\nWhat should your first attack be called?\n", wpm=200)
+    screen.clear()
+    screen.print(dt.header)
+    screen.typeout("What should your first attack be called?\n", wpm=200)
 
     while (atkname := screen.getline()) is not None:
         # If we have a valid name, break out of this loop.
@@ -71,7 +68,18 @@ if __name__ == "__main__":
         screen.print("\nInvalid name. Try another!")
         screen.print("What should your first attack be called?")
 
+    return (playername, atkname)
+
+if __name__ == "__main__":
+    engine = en.Engine()
+    screen = term.Terminal()
+
+    if len(sys.argv) != 2 or sys.argv[1] != "skip":
+        # Print a fake bootsplash if no skip command was issued.
+        bootsplash(engine)
+
     # Finish initialisation of the game engine.
+    playername, atkname = getnames()
     completeinit(engine, screen, playername, atkname)
 
     screen.clear()

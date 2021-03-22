@@ -8,7 +8,7 @@ import inspect
 import time
 import sys
 
-def completeinit(instance: en.Engine, screen: term.Terminal, playername: str, atkname: str) -> None:
+def completeinit(instance: en.Engine, playername: str, atkname: str) -> None:
     # Final engine initialisation. All rooms are created,
     # items and enemies assigned and initial spawn room set.
     instance.player = en.Character(name=playername, health=100)
@@ -27,7 +27,6 @@ def completeinit(instance: en.Engine, screen: term.Terminal, playername: str, at
     # Fill the dispatch table with commands and set the terminal instance.
     funky = {k:v for k, v in inspect.getmembers(cmd, inspect.isfunction)}
     instance.dispatch.update(funky)
-    instance.terminal = screen
 
 def bootsplash(engine: en.Engine) -> None:
     # Print a boot sequence to the terminal.
@@ -73,6 +72,7 @@ def getnames() -> t.Tuple[str, str]:
 if __name__ == "__main__":
     engine = en.Engine()
     screen = term.Terminal()
+    engine.terminal = screen
 
     if len(sys.argv) != 2 or sys.argv[1] != "skip":
         # Print a fake bootsplash if no skip command was issued.
@@ -80,7 +80,7 @@ if __name__ == "__main__":
 
     # Finish initialisation of the game engine.
     playername, atkname = getnames()
-    completeinit(engine, screen, playername, atkname)
+    completeinit(engine, playername, atkname)
 
     screen.clear()
     screen.print(dt.header)

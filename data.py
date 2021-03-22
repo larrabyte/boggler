@@ -7,7 +7,7 @@ initial = ("  ()-()\n"
            " _<   >_  kermit says guten tag\n"
            " \\/   \\/\n\n")
 
-bootstrap = ("kernel: kprintf initialized"
+bootstrap = ("kernel: kprintf initialized\n"
              "kernel: initialize_screen: b=9DF438000, w=00000A00, h=00000640, r=00002800, d=00000000\n"
              "kernel: pe_arm_init_interrupts: args: <private>\n"
              "kernel: pe_arm_map_interrupt_controller: soc_phys:  0x200000000\n"

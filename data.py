@@ -1,3 +1,7 @@
+header = ("---------------------------------------------\n"
+          "larrabyte/boggler: a text-adventure RPG game.\n"
+          "---------------------------------------------")
+
 initial = ("  ()-()\n"
            ".-(___)-. freelsd development kernel\n"
            " _<   >_  kermit says guten tag\n"

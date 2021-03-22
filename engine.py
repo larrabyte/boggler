@@ -1,3 +1,4 @@
+import random as rand
 import typing as t
 import enum as e
 
@@ -38,6 +39,18 @@ class Character:
         self.name = name
         self.health = health
         self.inventory = []
+        self.attacks = []
+
+    def addattack(self, name: str, basedmg: int) -> None:
+        # Add an attack to the character's attack dictionary.
+        entry = (name, basedmg)
+        self.attacks.append(entry)
+
+    def randattack(self) -> t.Tuple[str, int]:
+        # Return a random attack in a tuple of name/damage.
+        name, damage = rand.choice(self.attacks)
+        randomiser = rand.uniform(0.5, 1.5)
+        return (name, int(damage * randomiser))
 
 class Room:
     def __init__(self, name: str) -> None:
@@ -83,8 +96,8 @@ class Room:
 
 class Engine:
     def __init__(self) -> None:
-        self.player = Character(name="Player", health=100)
         self.dispatch = {}
+        self.player = None
         self.terminal = None
         self.cursor = None
 

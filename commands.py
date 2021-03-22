@@ -2,6 +2,7 @@ import terminal as term
 import inspect as ins
 import engine as en
 import typing as t
+import data as dt
 import sys as s
 
 def whereami(ctx: en.Engine, arguments: t.List[str]) -> str:
@@ -11,10 +12,7 @@ def whereami(ctx: en.Engine, arguments: t.List[str]) -> str:
 def clear(ctx: en.Engine, arguments: t.List[str]) -> str:
     """Clear the terminal."""
     ctx.terminal.clear()
-
-    return ("---------------------------------------------\n"
-            "larrabyte/boggler: a text-adventure RPG game.\n"
-            "---------------------------------------------")
+    return dt.header
 
 def exit(ctx: en.Engine, arguments: t.List[str]) -> str:
     """Exit the game."""

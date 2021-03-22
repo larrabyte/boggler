@@ -7,9 +7,12 @@ import inspect
 import time
 import sys
 
-def completeinit(instance: en.Engine, screen: term.Terminal) -> None:
+def completeinit(instance: en.Engine, screen: term.Terminal, playername: str, atkname: str) -> None:
     # Final engine initialisation. All rooms are created,
     # items and enemies assigned and initial spawn room set.
+    instance.player = en.Character(name=playername, health=100)
+    instance.player.addattack(name=atkname, basedmg=10)
+
     cpu = en.Room("Central Processing Unit")
     ram = en.Room("Random Access Memory")
     sb = en.Room("South Bridge")
@@ -41,18 +44,41 @@ def bootsplash(engine: en.Engine) -> None:
 if __name__ == "__main__":
     engine = en.Engine()
     screen = term.Terminal()
-    completeinit(engine, screen)
 
     if len(sys.argv) != 2 or sys.argv[1] != "skip":
         # Print a fake bootsplash if no skip command was issued.
         bootsplash(engine)
 
     screen.clear()
-    screen.print("---------------------------------------------")
-    screen.print("larrabyte/boggler: a text-adventure RPG game.")
-    screen.print("---------------------------------------------")
-    screen.print("something something put some text here to introduce the player to the game.")
-    screen.print("tl;dr you're inside a computer.\n")
+    screen.print(dt.header)
+    screen.typeout("What is your name?\n", wpm=200)
+
+    while (playername := screen.getline()) is not None:
+        # If we have a valid name, break out of this loop.
+        if not playername.isspace() and playername != "":
+            break
+
+        screen.print("\nInvalid name. Try another!")
+        screen.print("What is your name?")
+
+    screen.typeout("\nWhat should your first attack be called?\n", wpm=200)
+
+    while (atkname := screen.getline()) is not None:
+        # If we have a valid name, break out of this loop.
+        if not atkname.isspace() and atkname != "":
+            break
+
+        screen.print("\nInvalid name. Try another!")
+        screen.print("What should your first attack be called?")
+
+    # Finish initialisation of the game engine.
+    completeinit(engine, screen, playername, atkname)
+
+    screen.clear()
+    screen.print(dt.header)
+    screen.typeout("You look around and see bits flying in all directions.\n", wpm=200)
+    screen.typeout("You hear the incessant ticking of the CPU clock, whirring along at billions of cycles per second.\n", wpm=200)
+    screen.typeout("You just might be inside a computer.\n\n", wpm=200)
 
     while (userinput := screen.getline()) is not None:
         # Don't try and interpret input that consists of whitespace.

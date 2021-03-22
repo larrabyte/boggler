@@ -29,9 +29,8 @@ class Terminal:
     def typeout(self, message: str, wpm: int) -> None:
         # Type out characters to the terminal.
         for char in message:
-            sys.stdout.write(char)
-            sys.stdout.flush()
-            cps = random.random() * 12 / wpm
+            print(char, end="", flush=True)
+            cps = 8 / wpm
             time.sleep(cps)
 
     def getunixchar(self) -> None:

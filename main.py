@@ -1,10 +1,10 @@
 import terminal as term
 import commands as cmd
+import inspect as ins
 import engine as en
 import typing as t
 import data as dt
 
-import inspect
 import time
 import sys
 
@@ -24,9 +24,18 @@ def completeinit(instance: en.Engine, playername: str, atkname: str) -> None:
     sb.link(en.Direction.SOUTH, mb)
     instance.cursor = cpu
 
-    # Fill the dispatch table with commands and set the terminal instance.
-    funky = {k:v for k, v in inspect.getmembers(cmd, inspect.isfunction)}
-    instance.dispatch.update(funky)
+    bootloader = en.Character(name="grubby bootloader", health=20)
+    bootloader.addattack(name="invalid multiboot header", basedmg=5)
+    bootloader.addattack(name="you must load the kernel first", basedmg=3)
+    ram.enemies.append(bootloader)
+
+    # Populate the dispatch table with commands.
+    blueprint = {
+        "normal": {k:v for k, v in ins.getmembers(cmd.L1, ins.isfunction)},
+        "battle": {k:v for k, v in ins.getmembers(cmd.L2, ins.isfunction)}
+    }
+
+    instance.dispatch.update(blueprint)
 
 def bootsplash(engine: en.Engine) -> None:
     # Print a boot sequence to the terminal.
@@ -89,10 +98,8 @@ if __name__ == "__main__":
     screen.typeout("You just might be inside a computer.\n\n", wpm=200)
 
     while (userinput := screen.getline()) is not None:
-        # Don't try and interpret input that consists of whitespace.
-        if userinput.isspace(): continue
-
-        # Split the input into words and send to the engine.
-        userinput = userinput.split()
-        response = engine.interpret(userinput)
+        response = engine.interpret(mode="normal", userinput=userinput)
         screen.print(f"{response}\n")
+
+        while len(engine.cursor.enemies) > 0:
+            engine.battle()

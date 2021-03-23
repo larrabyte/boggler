@@ -1,5 +1,7 @@
+import terminal as term
 import random as rand
 import typing as t
+import data as dt
 import enum as e
 
 class Direction(e.Enum):
@@ -37,9 +39,17 @@ class Direction(e.Enum):
 class Character:
     def __init__(self, name: str, health: int) -> None:
         self.name = name
-        self.health = health
-        self.inventory = []
+        self.hp = health
         self.attacks = []
+
+    @property
+    def health(self) -> int:
+        return self.hp
+
+    @health.setter
+    def health(self, hp: int) -> None:
+        # Ensure that health can't go below zero.
+        self.hp = hp if hp >= 0 else 0
 
     def addattack(self, name: str, basedmg: int) -> None:
         # Add an attack to the character's attack dictionary.
@@ -55,8 +65,8 @@ class Character:
 class Room:
     def __init__(self, name: str) -> None:
         self.name = name
+        self.engaged = None
         self.enemies = []
-        self.drops = []
         self.links = {
             Direction.NORTH: None,
             Direction.EAST: None,
@@ -96,15 +106,46 @@ class Room:
 
 class Engine:
     def __init__(self) -> None:
-        self.dispatch = {}
         self.player = None
         self.terminal = None
         self.cursor = None
+        self.dispatch = {}
 
-    def interpret(self, argv: t.List[str]) -> str:
-        # Interpret a string passed in from the player.
-        # Uses the dispatch table to run the correct function.
-        if (func := self.dispatch.get(argv[0], None)) is not None:
+    def battle(self) -> None:
+        # Engage in a battle with an enemy in the room pointed to by the engine cursor.
+        self.cursor.engaged = self.cursor.enemies.pop(0)
+
+        def status() -> None:
+            self.terminal.clear()
+            self.terminal.print(dt.header)
+            self.terminal.print(f"{self.cursor.engaged.name}: {self.cursor.engaged.health}HP")
+            self.terminal.print(f"{self.player.name}: {self.player.health}HP\n")
+
+        status()
+        self.terminal.typeout("Uh-oh, looks like you ran into another enemy!\n", wpm=200)
+        self.terminal.typeout("What shall you do?\n\n", wpm=200)
+
+        while (action := self.terminal.getline()) is not None:
+            response = self.interpret(mode="battle", userinput=action)
+
+            self.terminal.clear()
+            status()
+            self.terminal.print(f"{response}\n")
+
+            # If health is zero, exit the terminal and print aftermath.
+            if self.cursor.engaged.health == 0:
+                break
+
+        self.terminal.print(f"You beat {self.cursor.engaged}!\n")
+
+    def interpret(self, mode: str, userinput: str) -> str:
+        # Use a dispatch table to run the correct function.
+        # Don't try and interpret input that consists of whitespace.
+        if len(argv := userinput.split()) == 0:
+            return
+
+        table = self.dispatch[mode]
+        if (func := table.get(argv[0], None)) is not None:
             result = func(self, argv[1:])
             return result
 

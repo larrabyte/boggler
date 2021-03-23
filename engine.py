@@ -115,13 +115,17 @@ class Engine:
         # Engage in a battle with an enemy in the room pointed to by the engine cursor.
         self.cursor.engaged = self.cursor.enemies.pop(0)
 
-        def status() -> None:
-            self.terminal.clear()
-            self.terminal.print(dt.header)
-            self.terminal.print(f"{self.cursor.engaged.name}: {self.cursor.engaged.health}HP")
-            self.terminal.print(f"{self.player.name}: {self.player.health}HP\n")
+        def header() -> str:
+            size = len(dt.header.split("\n")[0])
+            text = dt.header
 
-        status()
+            text += f"\n{'BATTLE MODE ACTIVE'.center(size)}\n"
+            text += f"{self.cursor.engaged.name} vs. {self.player.name}".center(size) + "\n"
+            text += f"{self.cursor.engaged.health}HP to {self.player.health}HP".center(size) + "\n"
+            return text
+
+        self.terminal.clear()
+        self.terminal.print(header())
         self.terminal.typeout("Uh-oh, looks like you ran into another enemy!\n", wpm=200)
         self.terminal.typeout("What shall you do?\n\n", wpm=200)
 
@@ -129,14 +133,15 @@ class Engine:
             response = self.interpret(mode="battle", userinput=action)
 
             self.terminal.clear()
-            status()
+            self.terminal.print(header())
             self.terminal.print(f"{response}\n")
 
             # If health is zero, exit the terminal and print aftermath.
             if self.cursor.engaged.health == 0:
                 break
 
-        self.terminal.print(f"You beat {self.cursor.engaged}!\n")
+        self.terminal.print(f"You beat {self.cursor.engaged.name}!")
+        self.terminal.print(f"List of enemy attacks: {self.cursor.engaged.attacks}\n")
 
     def interpret(self, mode: str, userinput: str) -> str:
         # Use a dispatch table to run the correct function.

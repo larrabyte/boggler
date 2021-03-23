@@ -44,8 +44,8 @@ class L1:
 
 class L2:
     @staticmethod
-    def attack(ctx: en.Engine, arguments: t.List[str]) -> None:
-        """Attack the enemy."""
+    def attack(ctx: en.Engine, arguments: t.List[str]) -> str:
+        """Attack the enemy, simple as that."""
         enemy = ctx.cursor.engaged
         pn, pd = ctx.player.randattack()
         en, ed = enemy.randattack()
@@ -60,3 +60,19 @@ class L2:
 
         return (f"You dealt {enemydiff} damage to {enemy.name} using {pn}!\n"
                 f"{enemy.name} dealt {playerdiff} damage to you using {en}!")
+
+    @staticmethod
+    def help(ctx: en.Engine, arguments: t.List[str]) -> str:
+        """Returns this help command."""
+        functions = ins.getmembers(L2, ins.isfunction)
+        strings = [f"{name}: {ptr.__doc__}" for name, ptr in functions]
+        return "\n".join(strings)
+
+    @staticmethod
+    def flee(ctx: en.Engine, arguments: t.List[str]) -> str:
+        """Attempt to run away from the enemy."""
+        if rand.randint(0, 100) > 75:
+            # Give a 25% chance of escaping.
+            return "Escaped!"
+
+        return "Failed to flee."

@@ -1,4 +1,3 @@
-import terminal as term
 import random as rand
 import inspect as ins
 import engine as en

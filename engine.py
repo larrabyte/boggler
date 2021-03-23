@@ -1,4 +1,3 @@
-import terminal as term
 import random as rand
 import typing as t
 import data as dt

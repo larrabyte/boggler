@@ -54,27 +54,27 @@ def getnames() -> t.Tuple[str, str]:
     # Print the initial screen and query for player data.
     screen.clear()
     screen.print(dt.header)
-    screen.typeout("What is your name?\n", wpm=200)
+    screen.typeout("System initialisation procedures.\n", wpm=200)
+    screen.typeout("What is your name?\n\n", wpm=200)
 
     while (playername := screen.getline()) is not None:
         # If we have a valid name, break out of this loop.
         if not playername.isspace() and playername != "":
             break
 
-        screen.print("\nInvalid name. Try another!")
-        screen.print("What is your name?")
+        screen.print("Invalid name. Try another!\n")
 
     screen.clear()
     screen.print(dt.header)
-    screen.typeout("What should your first attack be called?\n", wpm=200)
+    screen.typeout("System initialisation procedures.\n", wpm=200)
+    screen.typeout("What should your first attack be called?\n\n", wpm=200)
 
     while (atkname := screen.getline()) is not None:
         # If we have a valid name, break out of this loop.
         if not atkname.isspace() and atkname != "":
             break
 
-        screen.print("\nInvalid name. Try another!")
-        screen.print("What should your first attack be called?")
+        screen.print("Invalid name. Try another!\n")
 
     return (playername, atkname)
 
@@ -93,13 +93,14 @@ if __name__ == "__main__":
 
     screen.clear()
     screen.print(dt.header)
-    screen.typeout("You look around and see bits flying in all directions.\n", wpm=200)
-    screen.typeout("You hear the incessant ticking of the CPU clock, whirring along at billions of cycles per second.\n", wpm=200)
-    screen.typeout("You just might be inside a computer.\n\n", wpm=200)
+    screen.typeout("You awake to the sound of an alarm. Everything around you stands still as red light floods the room.\n", wpm=200)
+    screen.typeout("The incessant ticking of the CPU clock ceases, casting a deafening silence over the whole building.\n", wpm=200)
+    screen.typeout("As you get back on your feet, you notice a large crack along the eastern wall.\n", wpm=200)
+    screen.typeout("What shall you do?\n\n", wpm=150)
 
     while (userinput := screen.getline()) is not None:
-        response = engine.interpret(mode="normal", userinput=userinput)
-        screen.print(f"{response}\n")
+        if (response := engine.interpret(mode="normal", userinput=userinput)) is not None:
+            screen.print(f"{response}\n")
 
         while len(engine.cursor.enemies) > 0:
             engine.battle()

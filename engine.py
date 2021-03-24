@@ -123,11 +123,13 @@ class Engine:
             text += f"{self.cursor.engaged.health}HP to {self.player.health}HP".center(size) + "\n"
             return text
 
+        # Print the battle header.
         self.terminal.clear()
         self.terminal.print(header())
         self.terminal.typeout("Uh-oh, looks like you ran into another enemy!\n", wpm=200)
         self.terminal.typeout("What shall you do?\n\n", wpm=200)
 
+        # Let the user decide the course of action to take.
         while (action := self.terminal.getline()) is not None:
             response = self.interpret(mode="battle", userinput=action)
 
@@ -139,8 +141,27 @@ class Engine:
             if self.cursor.engaged.health == 0:
                 break
 
-        self.terminal.print(f"You beat {self.cursor.engaged.name}!")
-        self.terminal.print(f"List of enemy attacks: {self.cursor.engaged.attacks}\n")
+        # If we reach this point, then the user has beaten the user.
+        self.terminal.print(f"You managed to beat {self.cursor.engaged.name}!")
+        self.terminal.print(f"It seems they left behind these attacks:")
+
+        for index, attack in enumerate(self.cursor.engaged.attacks):
+            self.terminal.print(f"    {index}. {attack[0]} (base damage of {attack[1]})")
+
+        # Convert their attacks to a dictionary for ease of lookup.
+        self.terminal.print("\nWhich one would you like to pickup? If you don't wish to pick up anything, type \"none\".\n")
+        conversion = {str(k): v for k, v in enumerate(self.cursor.engaged.attacks)}
+
+        while (wanted := self.terminal.getline()) is not None:
+            if (attack := conversion.get(wanted, None)) is not None:
+                self.player.addattack(name=attack[0], basedmg=attack[1])
+                self.terminal.typeout(f"You learnt how to attack with {attack[0]}!\n", wpm=200)
+                break
+            elif wanted == "none":
+                self.terminal.typeout(f"You watch as the body of {self.cursor.engaged.name} slowly fades out of existence.\n", wpm=200)
+                break
+
+        self.terminal.typeout(f"The sounds of battle echo throughout the room.\n\n", wpm=200)
 
     def interpret(self, mode: str, userinput: str) -> str:
         # Use a dispatch table to run the correct function.

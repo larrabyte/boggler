@@ -7,7 +7,7 @@ import sys as s
 
 class L1:
     @staticmethod
-    def whereami(ctx: en.Engine, arguments: t.List[str]) -> str:
+    def ls(ctx: en.Engine, arguments: t.List[str]) -> str:
         """Shows currently adjacent rooms."""
         return ctx.cursor.adjacent()
 
@@ -68,10 +68,14 @@ class L2:
         return "\n".join(strings)
 
     @staticmethod
-    def flee(ctx: en.Engine, arguments: t.List[str]) -> str:
+    def flee(ctx: en.Engine, arguments: t.List[str]) -> t.Optional[str]:
         """Attempt to run away from the enemy."""
-        if rand.randint(0, 100) > 75:
+        if not ctx.cursor == ctx.goal and rand.randint(0, 100) > 75:
             # Give a 25% chance of escaping.
-            return "Escaped!"
+            ctx.cursor.engaged = None
+            ctx.terminal.clear()
+            ctx.terminal.print(dt.header)
+            ctx.terminal.print("You managed to escape the battle.\n")
+            return None
 
-        return "Failed to flee."
+        return "No getting away this time!"

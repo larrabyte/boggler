@@ -2,6 +2,7 @@ import random as rand
 import typing as t
 import data as dt
 import enum as e
+import sys as s
 
 class Direction(e.Enum):
     NORTH = 0
@@ -108,6 +109,7 @@ class Engine:
         self.player = None
         self.terminal = None
         self.cursor = None
+        self.goal = None
         self.dispatch = {}
 
     def battle(self) -> None:
@@ -133,6 +135,10 @@ class Engine:
         while (action := self.terminal.getline()) is not None:
             response = self.interpret(mode="battle", userinput=action)
 
+            # If the cursor is none, then the battle has been stopped!
+            if self.cursor.engaged is None:
+                return
+
             self.terminal.clear()
             self.terminal.print(header())
             self.terminal.print(f"{response}\n")
@@ -140,6 +146,14 @@ class Engine:
             # If health is zero, exit the terminal and print aftermath.
             if self.cursor.engaged.health == 0:
                 break
+
+            # Check the user's health after the enemy.
+            # If both hit zero, then let the user "win".
+            if self.player.health == 0:
+                size = len(dt.header.split("\n")[0])
+                self.terminal.print("YOU DIED".center(size))
+                self.terminal.print("")
+                s.exit()
 
         # If we reach this point, then the user has beaten the user.
         self.terminal.print(f"You managed to beat {self.cursor.engaged.name}!")
@@ -162,6 +176,7 @@ class Engine:
                 break
 
         self.terminal.typeout(f"The sounds of battle echo throughout the room.\n\n", wpm=200)
+        self.player.health = 100
 
     def interpret(self, mode: str, userinput: str) -> str:
         # Use a dispatch table to run the correct function.

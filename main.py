@@ -15,19 +15,72 @@ def completeinit(instance: en.Engine, playername: str, atkname: str) -> None:
     instance.player.addattack(name=atkname, basedmg=10)
 
     cpu = en.Room("Central Processing Unit")
+    mmu = en.Room("Memory Management Unit")
+    cache = en.Room("Memory Cache")
+    apic = en.Room("Interrupt Controller")
     ram = en.Room("Random Access Memory")
+    pcie = en.Room("PCI Express Bus")
+    hdd = en.Room("Hard Disk Drive")
     sb = en.Room("South Bridge")
-    mb = en.Room("Motherboard")
+    fpu = en.Room("Floating Point Unit")
+    gpu = en.Room("Graphics Processing Unit")
+    ethernet = en.Room("Ethernet Adapter")
+    www = en.Room("The World Wide Web")
+    ssd = en.Room("Solid State Drive")
+    chipset = en.Room("Chipset")
+    io = en.Room("I/O Hub")
+    speaker = en.Room("PC Speaker")
 
+    # Link all the rooms together.
+    cpu.link(en.Direction.NORTH, fpu)
+    cpu.link(en.Direction.EAST, mmu)
     cpu.link(en.Direction.SOUTH, sb)
-    cpu.link(en.Direction.EAST, ram)
-    sb.link(en.Direction.SOUTH, mb)
+    cpu.link(en.Direction.WEST, apic)
+    mmu.link(en.Direction.NORTH, cache)
+    mmu.link(en.Direction.SOUTH, ram)
+    sb.link(en.Direction.EAST, pcie)
+    sb.link(en.Direction.WEST, io)
+    sb.link(en.Direction.SOUTH, chipset)
+    io.link(en.Direction.NORTH, ssd)
+    io.link(en.Direction.WEST, hdd)
+    io.link(en.Direction.SOUTH, ethernet)
+    ethernet.link(en.Direction.WEST, www)
+    chipset.link(en.Direction.EAST, speaker)
+    pcie.link(en.Direction.NORTH, gpu)
     instance.cursor = cpu
+    instance.goal = www
 
-    bootloader = en.Character(name="grubby bootloader", health=20)
-    bootloader.addattack(name="invalid multiboot header", basedmg=5)
-    bootloader.addattack(name="you must load the kernel first", basedmg=3)
-    ram.enemies.append(bootloader)
+    # Add enemies to each room.
+    bigman = en.Character(name="ethernet device driver", health=75)
+    bigman.addattack(name="tcp/ip stack", basedmg=50)
+    bigman.addattack(name="the power of cryptography", basedmg=50)
+    bigman.addattack(name="nsa backdoor", basedmg=200)
+    bigman.addattack(name="endianness", basedmg=25)
+    ethernet.enemies.append(bigman)
+
+    southman = en.Character(name="the gatekeeper of the south", health=20)
+    southman.addattack(name="ring 0 access only", basedmg=10)
+    southman.addattack(name="sike smm interrupt", basedmg=20)
+    southman.addattack(name="raise interrupt 13", basedmg=15)
+    sb.enemies.append(southman)
+
+    ioman = en.Character(name="stuxnet", health=75)
+    ioman.addattack(name="throw centrifuges", basedmg=25)
+    ioman.addattack(name="lay dormant", basedmg=0)
+    ioman.addattack(name="become siemens", basedmg=25)
+    ioman.addattack(name="corrupt disk", basedmg=50)
+    io.enemies.append(ioman)
+
+    final = en.Character(name="the onion router", health=200)
+    final.addattack(name="onions", basedmg=999)
+    final.addattack(name="anonymous traffic spammer", basedmg=25)
+    final.addattack(name="unknown silky substances", basedmg=25)
+    final.addattack(name="third-party routing software", basedmg=25)
+    final.addattack(name="ethereum miner", basedmg=25)
+    final.addattack(name="deep packet inspection", basedmg=25)
+    final.addattack(name="man in the middle attack", basedmg=25)
+    final.addattack(name="isp throttling", basedmg=25)
+    www.enemies.append(final)
 
     # Populate the dispatch table with commands.
     blueprint = {
@@ -104,3 +157,11 @@ if __name__ == "__main__":
 
         while len(engine.cursor.enemies) > 0:
             engine.battle()
+
+        if engine.cursor == engine.goal:
+            # We won the game.
+            size = len(dt.header.split("\n")[0])
+            engine.terminal.print("YOU WIN".center(size))
+            engine.terminal.print("GG EZ".center(size))
+            engine.terminal.print("")
+            break

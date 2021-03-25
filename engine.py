@@ -168,14 +168,18 @@ class Engine:
 
         while (wanted := self.terminal.getline()) is not None:
             if (attack := conversion.get(wanted, None)) is not None:
+                self.terminal.clear()
+                self.terminal.print(dt.header)
                 self.player.addattack(name=attack[0], basedmg=attack[1])
                 self.terminal.typeout(f"You learnt how to attack with {attack[0]}!\n", wpm=200)
                 break
             elif wanted == "none":
+                self.terminal.clear()
+                self.terminal.print(dt.header)
                 self.terminal.typeout(f"You watch as the body of {self.cursor.engaged.name} slowly fades out of existence.\n", wpm=200)
                 break
 
-        self.terminal.typeout(f"The sounds of battle echo throughout the room.\n\n", wpm=200)
+        self.terminal.typeout("The battle is now over. You emerge victorious.\n\n", wpm=200)
         self.player.health = 100
 
     def interpret(self, mode: str, userinput: str) -> str:

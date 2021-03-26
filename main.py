@@ -152,6 +152,7 @@ if __name__ == "__main__":
     screen.typeout("What shall you do?\n\n", wpm=150)
 
     while (userinput := screen.getline()) is not None:
+        # Let the engine do the interpreting. We just get data from the terminal.
         if (response := engine.interpret(mode="normal", userinput=userinput)) is not None:
             screen.print(f"{response}\n")
 

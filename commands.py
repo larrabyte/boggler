@@ -49,6 +49,7 @@ class L2:
         pn, pd = ctx.player.randattack()
         en, ed = enemy.randattack()
 
+        # Store temp enemy health to calculate difference.
         temp = enemy.health
         enemy.health -= pd
         enemydiff = temp - enemy.health
@@ -64,6 +65,8 @@ class L2:
     def help(ctx: en.Engine, arguments: t.List[str]) -> str:
         """Returns this help command."""
         functions = ins.getmembers(L2, ins.isfunction)
+
+        # Iterate over all functions available and store their name + docstring.
         strings = [f"{name}: {ptr.__doc__}" for name, ptr in functions]
         return "\n".join(strings)
 
